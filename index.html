@@ -1764,9 +1764,9 @@ const PLACES = [
   /* Roads are grey and the land is deliberately near-white: a grey road network
      only reads as bold if everything it sits on is lighter than it is. */
   var G = {
-    land:'#f7f8fa', water:'#a9d3ef', park:'#e4f0e5', green:'#e8f2e9',
-    resid:'#f2f4f7', build:'#eaedf1', rail:'#ccd2d9', bound:'#dde1e6',
-    minor:'#bcc4ce', major:'#a7b0bb', moto:'#949eab',
+    land:'#fafbfc', water:'#a9d3ef', park:'#e4f0e5', green:'#e8f2e9',
+    resid:'#f4f6f9', build:'#edf0f4', rail:'#ccd2d9', bound:'#dde1e6',
+    minor:'#a5aeba', major:'#8e99a6', moto:'#7c8794',
     text:'#41464c', halo:'#ffffff'
   };
   var FILL = {
@@ -1784,7 +1784,7 @@ const PLACES = [
     road_minor:G.minor, tunnel_minor:G.minor, bridge_street:G.minor,
     road_link:G.minor, tunnel_link:G.minor, bridge_link:G.minor,
     road_service_track:G.minor, tunnel_service_track:G.minor, bridge_service_track:G.minor,
-    road_path_pedestrian:'#d5dae0', tunnel_path_pedestrian:'#d5dae0', bridge_path_pedestrian:'#d5dae0',
+    road_path_pedestrian:'#dde2e8', tunnel_path_pedestrian:'#dde2e8', bridge_path_pedestrian:'#dde2e8',
     road_major_rail:G.rail, tunnel_major_rail:G.rail, bridge_major_rail:G.rail,
     road_transit_rail:G.rail, tunnel_transit_rail:G.rail, bridge_transit_rail:G.rail,
     boundary_2:G.bound, boundary_3:G.bound, park_outline:G.park,
@@ -1794,11 +1794,12 @@ const PLACES = [
   // building extrusions are what made the map read as layered rather than flat.
   var HIDE = /^(poi_|place_other|road_area_pier|road_pier|aerialway|building_3d)/;
   var CASING = /_casing$/;
-  var FADE = { building:.45, boundary_2:.45, boundary_3:.35,
+  var FADE = { building:.6, boundary_2:.45, boundary_3:.35,
                road_major_rail:.55, road_transit_rail:.55,
                tunnel_major_rail:.45, bridge_major_rail:.45,
                tunnel_transit_rail:.45, bridge_transit_rail:.45,
-               road_path_pedestrian:.7 };
+               road_path_pedestrian:.45, tunnel_path_pedestrian:.45,
+               bridge_path_pedestrian:.45 };
   // Liberty's road widths are tuned for thin hairline roads; scale them up so the
   // network stays legible at the zoom levels this app actually opens at.
   var BOLD = {
