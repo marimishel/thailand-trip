@@ -1765,7 +1765,7 @@ const PLACES = [
      only reads as bold if everything it sits on is lighter than it is. */
   var G = {
     land:'#fafbfc', water:'#a9d3ef', park:'#e4f0e5', green:'#e8f2e9',
-    resid:'#f4f6f9', build:'#edf0f4', rail:'#ccd2d9', bound:'#dde1e6',
+    resid:'#f4f6f9', build:'#e8ebf0', buildLine:'#d5dbe4', rail:'#ccd2d9', bound:'#dde1e6',
     minor:'#a5aeba', major:'#8e99a6', moto:'#7c8794',
     text:'#41464c', halo:'#ffffff'
   };
@@ -1794,7 +1794,7 @@ const PLACES = [
   // building extrusions are what made the map read as layered rather than flat.
   var HIDE = /^(poi_|place_other|road_area_pier|road_pier|aerialway|building_3d)/;
   var CASING = /_casing$/;
-  var FADE = { building:.6, boundary_2:.45, boundary_3:.35,
+  var FADE = { boundary_2:.45, boundary_3:.35,
                road_major_rail:.55, road_transit_rail:.55,
                tunnel_major_rail:.45, bridge_major_rail:.45,
                tunnel_transit_rail:.45, bridge_transit_rail:.45,
@@ -1846,6 +1846,13 @@ const PLACES = [
         }
         if (BOLD[id]) scaleWidth(mm, l, BOLD[id]);
         if (FADE[id] != null) mm.setPaintProperty(id, l.type + '-opacity', FADE[id]);
+        if (id === 'building') {
+          // Liberty caps the flat building layer at z14 and hands off to the 3D
+          // extrusion above that; extending its range keeps 2D footprints at all
+          // zooms without reintroducing the extrusions.
+          mm.setLayerZoomRange(id, 13, 24);
+          mm.setPaintProperty(id, 'fill-outline-color', G.buildLine);
+        }
       } catch(e){}
     });
     painting = false;
