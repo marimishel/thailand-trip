@@ -1761,18 +1761,18 @@ const PLACES = [
      Vector is used rather than raster because no free raster provider still
      serves a modern-looking style with romanised labels. */
   var G = {
-    land:'#f8f9fa', water:'#aadaff', park:'#c9e8ca', green:'#d7edd8',
-    resid:'#f1f3f4', build:'#e9ebee', rail:'#dcdfe3', bound:'#d3d6da',
-    road:'#ffffff', roadCase:'#e6e8ea',
-    moto:'#fcd88a', motoCase:'#f0bf62',
-    trunkCase:'#dfe2e5', text:'#3c4043', halo:'#ffffff'
+    land:'#fbfbfc', water:'#b6dcf5', park:'#dceedd', green:'#e3f0e4',
+    resid:'#f6f7f8', build:'#f2f3f5', rail:'#e6e8ea', bound:'#e4e6e9',
+    road:'#e8ebee', roadCase:'#e0e3e7',
+    moto:'#f6dfad', motoCase:'#ecd096',
+    trunkCase:'#dcdfe3', text:'#5f6368', halo:'#ffffff'
   };
   var FILL = {
     background:G.land, park:G.park, landcover_wood:G.green, landcover_grass:G.green,
     landuse_pitch:G.green, landuse_track:G.green, landuse_cemetery:G.green,
-    landuse_residential:G.resid, landuse_hospital:'#fbeff0', landuse_school:'#f4f1e8',
-    water:G.water, landcover_sand:'#f6f1e2', landcover_wetland:'#e3eeea',
-    aeroway_fill:'#eceef0', building:G.build
+    landuse_residential:G.resid, landuse_hospital:'#f8f4f4', landuse_school:'#f7f6f2',
+    water:G.water, landcover_sand:'#f8f5ec', landcover_wetland:'#eef4f1',
+    aeroway_fill:'#f4f5f6', building:G.build
   };
   var LINE = {
     road_motorway:G.moto, tunnel_motorway:G.moto, bridge_motorway:G.moto,
@@ -1789,28 +1789,37 @@ const PLACES = [
     road_link_casing:G.roadCase, tunnel_link_casing:G.roadCase, bridge_link_casing:G.roadCase,
     road_service_track:G.road, tunnel_service_track:G.road, bridge_service_track:G.road,
     road_service_track_casing:G.roadCase, tunnel_service_track_casing:G.roadCase, bridge_service_track_casing:G.roadCase,
-    road_path_pedestrian:'#e2e5e8', tunnel_path_pedestrian:'#e2e5e8', bridge_path_pedestrian:'#e2e5e8',
+    road_path_pedestrian:'#eef0f2', tunnel_path_pedestrian:'#eef0f2', bridge_path_pedestrian:'#eef0f2',
     road_major_rail:G.rail, tunnel_major_rail:G.rail, bridge_major_rail:G.rail,
     road_transit_rail:G.rail, tunnel_transit_rail:G.rail, bridge_transit_rail:G.rail,
-    boundary_2:G.bound, boundary_3:G.bound, park_outline:'#bcdcbe',
+    boundary_2:G.bound, boundary_3:G.bound, park_outline:'#d3e6d4',
     waterway_river:G.water, waterway_other:G.water, waterway_tunnel:G.water
   };
+  // The base style's own POI pins and minor footpaths compete with our markers,
+  // so they are hidden rather than recoloured.
+  var HIDE = /^(poi_|place_other|road_area_pier|road_pier|aerialway|building_3d)/;
+  var FADE = { building:.55, boundary_2:.5, boundary_3:.4,
+               road_major_rail:.6, road_transit_rail:.6,
+               tunnel_major_rail:.5, bridge_major_rail:.5,
+               tunnel_transit_rail:.5, bridge_transit_rail:.5 };
   function repaint(mm){
     var st; try { st = mm.getStyle(); } catch(e){ return; }
     if (!st || !st.layers) return;
     st.layers.forEach(function(l){
       var id = l.id;
       try {
+        if (HIDE.test(id)) { mm.setLayoutProperty(id, 'visibility', 'none'); return; }
         if (l.type === 'background' && FILL[id]) mm.setPaintProperty(id, 'background-color', FILL[id]);
         else if (l.type === 'fill' && FILL[id]) mm.setPaintProperty(id, 'fill-color', FILL[id]);
         else if (l.type === 'line' && LINE[id]) mm.setPaintProperty(id, 'line-color', LINE[id]);
-        else if (l.type === 'fill-extrusion') mm.setPaintProperty(id, 'fill-extrusion-color', '#e4e7ea');
+        else if (l.type === 'fill-extrusion') mm.setPaintProperty(id, 'fill-extrusion-color', '#eef0f2');
         else if (l.type === 'raster' && id === 'natural_earth') mm.setPaintProperty(id, 'raster-opacity', 0);
         else if (l.type === 'symbol' && !/one_way|shield/.test(id)) {
           mm.setPaintProperty(id, 'text-color', G.text);
           mm.setPaintProperty(id, 'text-halo-color', G.halo);
-          mm.setPaintProperty(id, 'text-halo-width', 1.4);
+          mm.setPaintProperty(id, 'text-halo-width', 1.6);
         }
+        if (FADE[id] != null) mm.setPaintProperty(id, l.type + '-opacity', FADE[id]);
       } catch(e){}
     });
   }
