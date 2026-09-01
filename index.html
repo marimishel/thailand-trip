@@ -1638,7 +1638,8 @@ const PLACES = [
 
   function syncHead(){
     $('hTitle').textContent = REGIONS[state.region].name;
-    $('hCount').textContent = visible().length + ' places';
+    const n = visible().length;
+    $('hCount').textContent = n + (n === 1 ? ' place' : ' places');
   }
 
   /* ─── Go ─── */
