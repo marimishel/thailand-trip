@@ -1757,71 +1757,95 @@ const PLACES = [
   L.control.zoom({ position:'bottomright' }).addTo(map);
 
   /* ─── Basemap ───
-     Vector tiles (OpenFreeMap Liberty) recoloured to a Google-Maps-like palette.
+     Vector tiles (OpenFreeMap Liberty) restyled flat: no 3D extrusions, no road
+     casings, no drop shadows — just solid colour blocks and bold road lines.
      Vector is used rather than raster because no free raster provider still
      serves a modern-looking style with romanised labels. */
   var G = {
-    land:'#fbfbfc', water:'#b6dcf5', park:'#dceedd', green:'#e3f0e4',
-    resid:'#f6f7f8', build:'#f2f3f5', rail:'#e6e8ea', bound:'#e4e6e9',
-    road:'#e8ebee', roadCase:'#e0e3e7',
-    moto:'#f6dfad', motoCase:'#ecd096',
-    trunkCase:'#dcdfe3', text:'#5f6368', halo:'#ffffff'
+    land:'#e9ecf0', water:'#a9d3ef', park:'#cfe6d1', green:'#d7e9d9',
+    resid:'#eef1f4', build:'#dee2e8', rail:'#c2c9d1', bound:'#d6dae0',
+    minor:'#ffffff', major:'#ffffff', moto:'#f3c969',
+    text:'#41464c', halo:'#ffffff'
   };
   var FILL = {
     background:G.land, park:G.park, landcover_wood:G.green, landcover_grass:G.green,
     landuse_pitch:G.green, landuse_track:G.green, landuse_cemetery:G.green,
-    landuse_residential:G.resid, landuse_hospital:'#f8f4f4', landuse_school:'#f7f6f2',
-    water:G.water, landcover_sand:'#f8f5ec', landcover_wetland:'#eef4f1',
-    aeroway_fill:'#f4f5f6', building:G.build
+    landuse_residential:G.resid, landuse_hospital:'#e6e9ee', landuse_school:'#e6e9ee',
+    water:G.water, landcover_sand:'#eeeade', landcover_wetland:'#dfe9e4',
+    aeroway_fill:'#e3e7ec', building:G.build
   };
   var LINE = {
     road_motorway:G.moto, tunnel_motorway:G.moto, bridge_motorway:G.moto,
     road_motorway_link:G.moto, tunnel_motorway_link:G.moto, bridge_motorway_link:G.moto,
-    road_motorway_casing:G.motoCase, tunnel_motorway_casing:G.motoCase, bridge_motorway_casing:G.motoCase,
-    road_motorway_link_casing:G.motoCase, tunnel_motorway_link_casing:G.motoCase, bridge_motorway_link_casing:G.motoCase,
-    road_trunk_primary:G.road, tunnel_trunk_primary:G.road, bridge_trunk_primary:G.road,
-    road_trunk_primary_casing:G.trunkCase, tunnel_trunk_primary_casing:G.trunkCase, bridge_trunk_primary_casing:G.trunkCase,
-    road_secondary_tertiary:G.road, tunnel_secondary_tertiary:G.road, bridge_secondary_tertiary:G.road,
-    road_secondary_tertiary_casing:G.roadCase, tunnel_secondary_tertiary_casing:G.roadCase, bridge_secondary_tertiary_casing:G.roadCase,
-    road_minor:G.road, tunnel_minor:G.road, bridge_street:G.road,
-    road_minor_casing:G.roadCase, tunnel_street_casing:G.roadCase, bridge_street_casing:G.roadCase,
-    road_link:G.road, tunnel_link:G.road, bridge_link:G.road,
-    road_link_casing:G.roadCase, tunnel_link_casing:G.roadCase, bridge_link_casing:G.roadCase,
-    road_service_track:G.road, tunnel_service_track:G.road, bridge_service_track:G.road,
-    road_service_track_casing:G.roadCase, tunnel_service_track_casing:G.roadCase, bridge_service_track_casing:G.roadCase,
-    road_path_pedestrian:'#eef0f2', tunnel_path_pedestrian:'#eef0f2', bridge_path_pedestrian:'#eef0f2',
+    road_trunk_primary:G.major, tunnel_trunk_primary:G.major, bridge_trunk_primary:G.major,
+    road_secondary_tertiary:G.major, tunnel_secondary_tertiary:G.major, bridge_secondary_tertiary:G.major,
+    road_minor:G.minor, tunnel_minor:G.minor, bridge_street:G.minor,
+    road_link:G.minor, tunnel_link:G.minor, bridge_link:G.minor,
+    road_service_track:G.minor, tunnel_service_track:G.minor, bridge_service_track:G.minor,
+    road_path_pedestrian:'#e6e9ec', tunnel_path_pedestrian:'#e6e9ec', bridge_path_pedestrian:'#e6e9ec',
     road_major_rail:G.rail, tunnel_major_rail:G.rail, bridge_major_rail:G.rail,
     road_transit_rail:G.rail, tunnel_transit_rail:G.rail, bridge_transit_rail:G.rail,
-    boundary_2:G.bound, boundary_3:G.bound, park_outline:'#d3e6d4',
+    boundary_2:G.bound, boundary_3:G.bound, park_outline:G.park,
     waterway_river:G.water, waterway_other:G.water, waterway_tunnel:G.water
   };
-  // The base style's own POI pins and minor footpaths compete with our markers,
-  // so they are hidden rather than recoloured.
+  // The base style's own POI pins compete with our markers; casings and 3D
+  // building extrusions are what made the map read as layered rather than flat.
   var HIDE = /^(poi_|place_other|road_area_pier|road_pier|aerialway|building_3d)/;
-  var FADE = { building:.55, boundary_2:.5, boundary_3:.4,
-               road_major_rail:.6, road_transit_rail:.6,
-               tunnel_major_rail:.5, bridge_major_rail:.5,
-               tunnel_transit_rail:.5, bridge_transit_rail:.5 };
+  var CASING = /_casing$/;
+  var FADE = { building:.45, boundary_2:.45, boundary_3:.35,
+               road_major_rail:.55, road_transit_rail:.55,
+               tunnel_major_rail:.45, bridge_major_rail:.45,
+               tunnel_transit_rail:.45, bridge_transit_rail:.45,
+               road_path_pedestrian:.7 };
+  // Liberty's road widths are tuned for thin hairline roads; scale them up so the
+  // network stays legible at the zoom levels this app actually opens at.
+  var BOLD = {
+    road_motorway:1.55, tunnel_motorway:1.55, bridge_motorway:1.55,
+    road_motorway_link:1.5, tunnel_motorway_link:1.5, bridge_motorway_link:1.5,
+    road_trunk_primary:2.0, tunnel_trunk_primary:2.0, bridge_trunk_primary:2.0,
+    road_secondary_tertiary:2.1, tunnel_secondary_tertiary:2.1, bridge_secondary_tertiary:2.1,
+    road_minor:2.2, tunnel_minor:2.2, bridge_street:2.2,
+    road_link:2.0, tunnel_link:2.0, bridge_link:2.0,
+    road_service_track:1.9, tunnel_service_track:1.9, bridge_service_track:1.9
+  };
+  var origW = {};
+  function scaleWidth(mm, l, f){
+    // repaint() runs on every styledata event, so the original width is cached:
+    // reading the live value back would compound the multiplier each pass.
+    if (!(l.id in origW)) {
+      var w = (l.paint || {})['line-width'];
+      origW[l.id] = (w == null) ? 1 : w;
+    }
+    // line-width is usually a zoom interpolate expression, so multiply rather
+    // than replace it to keep the style's own zoom ramp.
+    mm.setPaintProperty(l.id, 'line-width', ['*', f, origW[l.id]]);
+  }
+  var painting = false;
   function repaint(mm){
+    if (painting) return;            // setPaintProperty re-fires styledata
     var st; try { st = mm.getStyle(); } catch(e){ return; }
     if (!st || !st.layers) return;
+    painting = true;
     st.layers.forEach(function(l){
       var id = l.id;
       try {
-        if (HIDE.test(id)) { mm.setLayoutProperty(id, 'visibility', 'none'); return; }
+        if (HIDE.test(id) || CASING.test(id) || l.type === 'fill-extrusion') {
+          mm.setLayoutProperty(id, 'visibility', 'none'); return;
+        }
         if (l.type === 'background' && FILL[id]) mm.setPaintProperty(id, 'background-color', FILL[id]);
         else if (l.type === 'fill' && FILL[id]) mm.setPaintProperty(id, 'fill-color', FILL[id]);
         else if (l.type === 'line' && LINE[id]) mm.setPaintProperty(id, 'line-color', LINE[id]);
-        else if (l.type === 'fill-extrusion') mm.setPaintProperty(id, 'fill-extrusion-color', '#eef0f2');
         else if (l.type === 'raster' && id === 'natural_earth') mm.setPaintProperty(id, 'raster-opacity', 0);
         else if (l.type === 'symbol' && !/one_way|shield/.test(id)) {
           mm.setPaintProperty(id, 'text-color', G.text);
           mm.setPaintProperty(id, 'text-halo-color', G.halo);
-          mm.setPaintProperty(id, 'text-halo-width', 1.6);
+          mm.setPaintProperty(id, 'text-halo-width', 1.8);
         }
+        if (BOLD[id]) scaleWidth(mm, l, BOLD[id]);
         if (FADE[id] != null) mm.setPaintProperty(id, l.type + '-opacity', FADE[id]);
       } catch(e){}
     });
+    painting = false;
   }
 
   var BASE = {
