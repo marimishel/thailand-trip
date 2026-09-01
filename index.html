@@ -1761,18 +1761,20 @@ const PLACES = [
      casings, no drop shadows — just solid colour blocks and bold road lines.
      Vector is used rather than raster because no free raster provider still
      serves a modern-looking style with romanised labels. */
+  /* Roads are grey and the land is deliberately near-white: a grey road network
+     only reads as bold if everything it sits on is lighter than it is. */
   var G = {
-    land:'#e9ecf0', water:'#a9d3ef', park:'#cfe6d1', green:'#d7e9d9',
-    resid:'#eef1f4', build:'#dee2e8', rail:'#c2c9d1', bound:'#d6dae0',
-    minor:'#ffffff', major:'#ffffff', moto:'#f3c969',
+    land:'#f7f8fa', water:'#a9d3ef', park:'#e4f0e5', green:'#e8f2e9',
+    resid:'#f2f4f7', build:'#eaedf1', rail:'#ccd2d9', bound:'#dde1e6',
+    minor:'#bcc4ce', major:'#a7b0bb', moto:'#949eab',
     text:'#41464c', halo:'#ffffff'
   };
   var FILL = {
     background:G.land, park:G.park, landcover_wood:G.green, landcover_grass:G.green,
     landuse_pitch:G.green, landuse_track:G.green, landuse_cemetery:G.green,
-    landuse_residential:G.resid, landuse_hospital:'#e6e9ee', landuse_school:'#e6e9ee',
-    water:G.water, landcover_sand:'#eeeade', landcover_wetland:'#dfe9e4',
-    aeroway_fill:'#e3e7ec', building:G.build
+    landuse_residential:G.resid, landuse_hospital:'#f0f2f5', landuse_school:'#f0f2f5',
+    water:G.water, landcover_sand:'#f4f1e6', landcover_wetland:'#e9f1ec',
+    aeroway_fill:'#eef1f4', building:G.build
   };
   var LINE = {
     road_motorway:G.moto, tunnel_motorway:G.moto, bridge_motorway:G.moto,
@@ -1782,7 +1784,7 @@ const PLACES = [
     road_minor:G.minor, tunnel_minor:G.minor, bridge_street:G.minor,
     road_link:G.minor, tunnel_link:G.minor, bridge_link:G.minor,
     road_service_track:G.minor, tunnel_service_track:G.minor, bridge_service_track:G.minor,
-    road_path_pedestrian:'#e6e9ec', tunnel_path_pedestrian:'#e6e9ec', bridge_path_pedestrian:'#e6e9ec',
+    road_path_pedestrian:'#d5dae0', tunnel_path_pedestrian:'#d5dae0', bridge_path_pedestrian:'#d5dae0',
     road_major_rail:G.rail, tunnel_major_rail:G.rail, bridge_major_rail:G.rail,
     road_transit_rail:G.rail, tunnel_transit_rail:G.rail, bridge_transit_rail:G.rail,
     boundary_2:G.bound, boundary_3:G.bound, park_outline:G.park,
